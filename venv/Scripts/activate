@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\danie\CodingStuff\ai-prac\face-recognizer\venv"
+VIRTUAL_ENV="C:\Users\danie\CodingStuff\ai-prac\face-detection\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
