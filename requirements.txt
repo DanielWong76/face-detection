@@ -4,3 +4,7 @@ numpy==1.24.2
 Pillow==10.3.0
 pillow-heif
 opencv-python
+numpy
+matplotlib
+seaborn
+scikit-learn

@@ -19,31 +19,35 @@ def recognize_faces(
     model: str = "hog",
     encodings_location: Path = DEFAULT_ENCODINGS_PATH,
 ) -> None:
-	with encodings_location.open(mode="rb") as f:
-		loaded_encodings = pickle.load(f)
+    with encodings_location.open(mode="rb") as f:
+        loaded_encodings = pickle.load(f)
 
-	input_image = face_recognition.load_image_file(image_location)
-	input_face_locations = face_recognition.face_locations(
-		input_image, model=model
-	)
-	input_face_encodings = face_recognition.face_encodings(
-		input_image, input_face_locations
-	)
+    input_image = face_recognition.load_image_file(image_location)
+    input_face_locations = face_recognition.face_locations(
+        input_image, model=model
+    )
+    input_face_encodings = face_recognition.face_encodings(
+        input_image, input_face_locations
+    )
 
-	pillow_image = Image.fromarray(input_image)
-	draw = ImageDraw.Draw(pillow_image)
+    pillow_image = Image.fromarray(input_image)
+    draw = ImageDraw.Draw(pillow_image)
 
-	for bounding_box, unknown_encoding in zip(
-		input_face_locations, input_face_encodings
-	):
-		name = _recognize_face(unknown_encoding, loaded_encodings)
-		if not name:
-			name = "Unknown"
-		# Removed print(name, bounding_box)
-		_display_face(draw, bounding_box, name)
+    results = []
+    for bounding_box, unknown_encoding in zip(
+        input_face_locations, input_face_encodings
+    ):
+        name = _recognize_face(unknown_encoding, loaded_encodings)
+        if not name:
+            name = "Unknown"
+        
+        results.append((bounding_box, name))
+        # Removed print(name, bounding_box)
+        _display_face(draw, bounding_box, name)
 
-	del draw
-	pillow_image.show()
+    del draw
+    pillow_image.show()
+    return results
 	
 def _display_face(draw, bounding_box, name):
     top, right, bottom, left = bounding_box
