@@ -2,7 +2,7 @@ from PIL import Image
 from pillow_heif import register_heif_opener
 import os
 
-filepath = "training/Daniel"
+filepath = "validation/Daniel"
 
 register_heif_opener()
 heic_files = [photo for photo in os.listdir(filepath) if '.HEIC' in photo]
