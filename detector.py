@@ -4,6 +4,7 @@ import face_recognition
 from collections import Counter
 from PIL import Image, ImageDraw
 import cv2
+from datetime import datetime
 
 BOUNDING_BOX_COLOR = "blue"
 TEXT_COLOR = "white"
@@ -86,6 +87,7 @@ def recognize_faces_from_webcam(
         loaded_encodings = pickle.load(f)
 
     video_capture = cv2.VideoCapture(0)
+    recognized_people = set()
 
     while True:
         ret, frame = video_capture.read()
@@ -103,6 +105,10 @@ def recognize_faces_from_webcam(
                 name = "Unknown"
             _display_face_opencv(frame, bounding_box, name)
 
+            if name != "Unknown" and name not in recognized_people:
+                _zoom_and_save(frame, bounding_box, name)
+                recognized_people.add(name)
+
         cv2.imshow('Video', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -110,6 +116,30 @@ def recognize_faces_from_webcam(
 
     video_capture.release()
     cv2.destroyAllWindows()
+
+def _zoom_and_save(frame, bounding_box, name):
+    top, right, bottom, left = bounding_box
+
+    # Define the zoom factor
+    zoom_factor = 1.5
+
+    # Compute the new bounding box coordinates
+    center_x, center_y = (left + right) // 2, (top + bottom) // 2
+    width = int((right - left) * zoom_factor)
+    height = int((bottom - top) * zoom_factor)
+    new_left = max(center_x - width // 2, 0)
+    new_right = min(center_x + width // 2, frame.shape[1])
+    new_top = max(center_y - height // 2, 0)
+    new_bottom = min(center_y + height // 2, frame.shape[0])
+
+    # Crop the zoomed-in region
+    zoomed_frame = frame[new_top:new_bottom, new_left:new_right]
+
+    # Save the image
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"recognized_faces/{name}_{timestamp}.jpg"
+    Path("recognized_faces").mkdir(exist_ok=True)
+    cv2.imwrite(filename, zoomed_frame)
 
 def _display_face_opencv(frame, bounding_box, name):
     top, right, bottom, left = bounding_box
