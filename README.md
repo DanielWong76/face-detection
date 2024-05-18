@@ -11,3 +11,5 @@ To train model to recognize you:
 To run detection on the camera: python camera.py
 
 To run validation: python validation.py
+
+Snipes can be seen in the recognized_faces folder
